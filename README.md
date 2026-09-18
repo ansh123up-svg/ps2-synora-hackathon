@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # XtreamHealthAI v3 — by TeamXtream
 
 > **Comprehensive Health Intelligence Platform** combining Chronic Health Monitoring,
@@ -71,3 +72,6 @@ Then open `frontend.html` in your browser — no extra server needed.
 ---
 
 *XtreamHealthAI by TeamXtream — Not a medical device. Not a substitute for professional medical advice.*
+=======
+# ps2-synora-hackathon
+>>>>>>> 3e08ddd45ddb74a281fc1797e52c9c134052da05
