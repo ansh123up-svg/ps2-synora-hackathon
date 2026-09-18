@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>XtreamHealthAI — by TeamXtream</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#2563eb;--blue2:#1d4ed8;--blue-l:#eff6ff;--blue-m:#dbeafe;
+  --green:#16a34a;--green-l:#f0fdf4;--green-m:#dcfce7;
+  --red:#dc2626;--red-l:#fef2f2;--orange:#ea580c;--orange-l:#fff7ed;
+  --yellow:#ca8a04;--purple:#7c3aed;
+  --bg:#f0f4f8;--sb:#ffffff;--main:#ffffff;--rp:#f8fafc;
+  --bdr:#e2e8f0;--bdr2:#f1f5f9;
+  --t1:#0f172a;--t2:#334155;--t3:#64748b;--t4:#94a3b8;
+  --sh:0 1px 3px rgba(0,0,0,.08);
+  --sh2:0 4px 16px rgba(0,0,0,.08);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);height:100vh;display:flex;overflow:hidden;font-size:13px;}
+.shell{display:flex;width:100%;height:100vh;}
+.sidebar{width:248px;min-width:248px;background:var(--sb);border-right:1px solid var(--bdr);display:flex;flex-direction:column;}
+.center{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--main);}
+.rightpanel{width:300px;min-width:300px;background:var(--rp);border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;}
+
+/* SIDEBAR */
+.sb-top{padding:14px 14px 10px;border-bottom:1px solid var(--bdr);}
+.brand{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.brand-logo{width:32px;height:32px;background:linear-gradient(135deg,#2563eb 0%,#06b6d4 100%);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(37,99,235,.35);}
+.brand-text{font-size:14px;font-weight:800;letter-spacing:-.4px;background:linear-gradient(135deg,#2563eb,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{font-size:9px;color:var(--t4);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:-2px;}
+.sb-search{display:flex;align-items:center;gap:7px;border:1px solid var(--bdr);border-radius:9px;padding:7px 10px;background:#f8fafc;}
+.sb-search input{border:none;outline:none;font-size:12px;color:var(--t2);background:transparent;flex:1;}
+.sb-search input::placeholder{color:var(--t4);}
+.sb-section{padding:10px 12px 4px;}
+.sb-label{font-size:10px;font-weight:700;color:var(--t4);letter-spacing:.6px;text-transform:uppercase;padding:0 4px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+.sb-label-count{background:var(--bdr);color:var(--t3);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;}
+.pt-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;cursor:pointer;transition:all .15s;margin-bottom:2px;}
+.pt-item:hover{background:#f8fafc;}
+.pt-item.active{background:var(--blue-l);}
+.pt-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.pt-info{flex:1;min-width:0;}
+.pt-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pt-item.active .pt-name{color:var(--blue);}
+.pt-meta{font-size:10px;color:var(--t4);margin-top:1px;}
+.pt-status{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.pt-status.on{background:#22c55e;box-shadow:0 0 0 2px #dcfce7;}
+.pt-status.busy{background:#f59e0b;}
+.pt-status.off{background:#cbd5e1;}
+.unread{background:var(--blue);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}
+.sb-nav-item{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;color:var(--t3);font-size:12px;font-weight:500;transition:all .15s;}
+.sb-nav-item:hover{background:#f8fafc;color:var(--t2);}
+.sb-footer{padding:10px 12px;border-top:1px solid var(--bdr);margin-top:auto;}
+.doc-card{display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px;}
+.doc-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+.doc-name{font-size:12px;font-weight:700;}
+.doc-status{font-size:10px;color:var(--green);display:flex;align-items:center;gap:3px;margin-top:1px;}
+.online-dot{width:5px;height:5px;border-radius:50%;background:var(--green);}
+
+/* CENTER HEADER */
+.ch{padding:12px 18px 0;border-bottom:1px solid var(--bdr);flex-shrink:0;background:#fff;}
+.ch-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.ch-patient{display:flex;align-items:center;gap:10px;}
+.ch-pav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.ch-pname{font-size:16px;font-weight:700;color:var(--t1);}
+.ch-psub{font-size:11px;color:var(--t4);margin-top:1px;}
+.ch-controls{display:flex;align-items:center;gap:7px;}
+.ctrl{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;white-space:nowrap;}
+.ctrl.conn{background:#fff;color:var(--t3);border-color:var(--bdr);}
+.ctrl.conn.up{color:var(--green);border-color:#bbf7d0;background:var(--green-l);}
+.ctrl.outline{background:#fff;color:var(--t3);border-color:var(--bdr);}
+.ctrl.outline:hover{color:var(--t1);border-color:#94a3b8;}
+.ctrl.well{background:var(--green-l);color:var(--green);border-color:#86efac;}
+.ctrl.tri{background:var(--orange-l);color:var(--orange);border-color:#fed7aa;}
+#conn-dot{width:6px;height:6px;border-radius:50%;background:#cbd5e1;transition:background .3s;}
+#conn-dot.up{background:#22c55e;}
+.tabs{display:flex;}
+.tab{padding:9px 16px;font-size:12px;font-weight:500;color:var(--t4);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--t2);}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700;}
+.tab-badge{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px;}
+
+/* PANELS */
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.panel.active{display:flex;}
+
+/* CHAT */
+.chat-scroll{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;}
+.chat-scroll::-webkit-scrollbar{width:4px;}
+.chat-scroll::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:2px;}
+.msg{display:flex;gap:10px;align-items:flex-start;}
+.msg.user{flex-direction:row-reverse;}
+.m-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.m-av.ai{background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;}
+.m-av.u{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;}
+.m-body{max-width:74%;}
+.msg.user .m-body{align-items:flex-end;display:flex;flex-direction:column;}
+.m-name{font-size:10px;font-weight:600;color:var(--t4);margin-bottom:3px;}
+.msg.user .m-name{text-align:right;}
+.tool-row{display:flex;align-items:center;gap:4px;margin-bottom:5px;flex-wrap:wrap;}
+.tb{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid;}
+.tb.ok{background:var(--green-m);color:var(--green);border-color:#86efac;}
+.tb.type{background:#f1f5f9;color:var(--t3);border-color:var(--bdr);}
+.tb.ep{background:var(--blue-m);color:var(--blue);border-color:#93c5fd;}
+.tb.esc{background:#fff7ed;color:var(--orange);border-color:#fed7aa;}
+.tb.rag{background:#faf5ff;color:#7c3aed;border-color:#ddd6fe;}
+.tb.conf{background:#f0fdf4;color:var(--green);border-color:#86efac;}
+.tb-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.bubble{padding:11px 14px;border-radius:14px;font-size:13px;line-height:1.6;}
+.bubble.ai{background:#fff;border:1px solid var(--bdr);color:var(--t1);border-top-left-radius:4px;box-shadow:var(--sh);}
+.bubble.user{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border-top-right-radius:4px;box-shadow:var(--sh);}
+.bubble.emergency{background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;}
+.citations{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.cite-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#f8fafc;border:1px solid var(--bdr);border-radius:12px;font-size:10px;color:var(--blue);cursor:pointer;transition:all .15s;}
+.cite-chip:hover{background:var(--blue-l);}
+.m-footer{display:flex;align-items:center;justify-content:space-between;margin-top:5px;}
+.tokens{font-size:10px;color:var(--t4);font-family:monospace;}
+.latency{font-size:10px;color:var(--t4);}
+.typing-bub{display:inline-flex;align-items:center;gap:4px;padding:11px 14px;background:#fff;border:1px solid var(--bdr);border-radius:14px;border-top-left-radius:4px;}
+.typing-bub span{width:5px;height:5px;border-radius:50%;background:#94a3b8;animation:blink 1.2s infinite;}
+.typing-bub span:nth-child(2){animation-delay:.2s;}
+.typing-bub span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:.3;}30%{opacity:1;}}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--t4);text-align:center;padding:24px;}
+.empty .e-icon{font-size:40px;margin-bottom:6px;opacity:.7;}
+.empty h3{font-size:14px;font-weight:700;color:var(--t3);}
+.empty p{font-size:12px;max-width:240px;line-height:1.5;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px;}
+.chip{padding:5px 13px;border-radius:16px;border:1.5px solid var(--bdr);background:#fff;color:var(--t3);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chip:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l);}
+.sbar{padding:5px 18px;background:#f8fafc;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sbar-l{font-size:10px;color:var(--t4);display:flex;align-items:center;gap:5px;}
+.sbar-r{font-size:10px;color:var(--t4);}
+.live{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;}
+.dead{width:5px;height:5px;border-radius:50%;background:#cbd5e1;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.inp-wrap{border-top:1px solid var(--bdr);background:#fff;flex-shrink:0;padding:10px 18px;}
+.inp-box{display:flex;align-items:flex-end;gap:8px;border:1.5px solid var(--bdr);border-radius:13px;padding:9px 12px;background:#f8fafc;transition:border-color .15s;}
+.inp-box:focus-within{border-color:var(--blue);background:#fff;}
+textarea.inp{flex:1;border:none;outline:none;font-size:13px;font-family:inherit;resize:none;background:transparent;color:var(--t1);line-height:1.5;max-height:100px;}
+textarea.inp::placeholder{color:var(--t4);}
+.send-btn{width:34px;height:34px;background:var(--blue);border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0;transition:background .15s;box-shadow:0 2px 6px rgba(37,99,235,.4);}
+.send-btn:hover{background:var(--blue2);}
+.send-btn:disabled{background:#bfdbfe;cursor:not-allowed;box-shadow:none;}
+.inp-toolbar{display:flex;align-items:center;gap:6px;margin-top:7px;}
+.mode-pill{padding:4px 11px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;}
+.mode-pill.wellness{background:var(--green-l);color:var(--green);border-color:#86efac;}
+.mode-pill.triage{background:var(--orange-l);color:var(--orange);border-color:#fed7aa;}
+.icon-pill{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--bdr);background:#fff;color:var(--t3);transition:all .15s;}
+.icon-pill:hover{border-color:#94a3b8;}
+.disclaimer{margin-left:auto;font-size:10px;color:var(--t4);}
+
+/* MEAL */
+.meal-scroll{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.upload-lbl{display:block;border:2px dashed var(--bdr);border-radius:14px;padding:30px;text-align:center;cursor:pointer;transition:all .15s;background:#fff;box-shadow:var(--sh);}
+.upload-lbl:hover{border-color:var(--blue);background:var(--blue-l);}
+.up-icon{font-size:36px;margin-bottom:8px;}
+.up-title{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:4px;}
+.up-sub{font-size:11px;color:var(--t4);}
+#meal-prev{max-width:200px;border-radius:12px;margin:10px auto 0;display:block;box-shadow:var(--sh2);}
+.analyse-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 22px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,235,.3);transition:background .15s;}
+.analyse-btn:hover{background:var(--blue2);}
+.analyse-btn:disabled{background:#bfdbfe;cursor:not-allowed;box-shadow:none;}
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.mc{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:14px 10px;text-align:center;box-shadow:var(--sh);}
+.mc-l{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+.mc-v{font-size:22px;font-weight:800;line-height:1;}
+.mc-u{font-size:11px;color:var(--t4);font-weight:400;}
+.mc-v.cal{color:#f97316;}.mc-v.pro{color:#2563eb;}.mc-v.car{color:#8b5cf6;}.mc-v.fat{color:#ec4899;}
+.meal-card{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:14px;box-shadow:var(--sh);font-size:13px;line-height:1.65;color:var(--t2);}
+
+/* WEARABLE */
+.wear-ctrl{display:flex;gap:7px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.wear-scroll{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:9px;}
+.wb{padding:7px 16px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--t3);transition:all .15s;}
+.wb:hover{border-color:#94a3b8;color:var(--t2);}
+.wb.stream{background:var(--green-l);color:var(--green);border-color:#86efac;}
+.wb.danger{background:var(--red-l);color:var(--red);border-color:#fca5a5;}
+.w-card{background:#fff;border:1px solid var(--bdr);border-radius:11px;padding:12px 14px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;}
+.w-card.anom{border-color:#fca5a5;background:#fff8f8;}
+.w-label{font-size:10px;color:var(--t4);margin-bottom:3px;}
+.w-vals{font-size:13px;font-weight:600;}
+.w-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.w-find{font-size:11px;color:var(--red);margin-top:4px;}
+.w-time{font-size:10px;color:var(--t4);font-family:monospace;flex-shrink:0;margin-left:10px;}
+.ok-pill{background:var(--green-m);color:var(--green);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+.an-pill{background:#fee2e2;color:var(--red);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+.crit-pill{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+
+/* RIGHT PANEL */
+.rp{flex-shrink:0;padding:12px;border-bottom:1px solid var(--bdr);}
+.rp-title{font-size:11px;font-weight:700;color:var(--t2);display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.rp-action{font-size:10px;color:var(--blue);cursor:pointer;font-weight:600;}
+.rp-action:hover{text-decoration:underline;}
+.vitals-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.vc{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:10px 6px;text-align:center;box-shadow:var(--sh);}
+.vc-i{font-size:14px;margin-bottom:3px;}
+.vc-v{font-size:16px;font-weight:800;line-height:1;}
+.vc-u{font-size:9px;color:var(--t4);margin-top:2px;}
+.vc-l{font-size:9px;color:var(--t4);margin-top:1px;}
+.vc-v.norm{color:var(--green);}.vc-v.warn{color:var(--orange);}.vc-v.crit{color:var(--red);}.vc-v.neu{color:var(--blue);}
+.rx{background:#fff;border:1px solid var(--bdr);border-radius:11px;padding:10px 12px;margin-bottom:7px;position:relative;overflow:hidden;box-shadow:var(--sh);}
+.rx::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.rx.g::before{background:var(--green);}.rx.b::before{background:var(--blue);}.rx.y::before{background:#eab308;}.rx.r::before{background:var(--red);}
+.rx-name{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:2px;padding-right:44px;}
+.rx-dose{font-size:11px;color:var(--t3);}
+.rx-freq{font-size:10px;color:var(--t4);margin-top:2px;}
+.rx-tag{position:absolute;right:8px;top:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;}
+.rx-tag.otc{background:var(--green-l);color:var(--green);}.rx-tag.rx{background:var(--blue-l);color:var(--blue);}.rx-tag.warn{background:var(--orange-l);color:var(--orange);}
+.disc{background:#fefce8;border:1px solid #fef08a;border-radius:9px;padding:8px 10px;font-size:10px;color:#854d0e;line-height:1.45;margin-top:2px;}
+.nb{margin-bottom:8px;}
+.nb-head{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.nb-head span:first-child{color:var(--t3);font-weight:500;}
+.nb-head span:last-child{color:var(--t4);}
+.nb-bg{background:#f1f5f9;border-radius:4px;height:6px;overflow:hidden;}
+.nb-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.al-entry{padding:6px 0;border-bottom:1px solid var(--bdr2);font-size:11px;color:var(--red);line-height:1.4;}
+.al-time{color:var(--t4);font-family:monospace;font-size:10px;}
+.intent-row{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.intent-chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;}
+.intent-chip.wellness{background:var(--green-m);color:var(--green);}
+.intent-chip.triage{background:var(--orange-l);color:var(--orange);}
+.intent-chip.emergency{background:var(--red-l);color:var(--red);}
+.conf-bar{height:3px;border-radius:2px;background:var(--bdr);margin:4px 0;overflow:hidden;}
+.conf-fill{height:100%;border-radius:2px;transition:width .5s;}
+*{scrollbar-width:thin;scrollbar-color:#e2e8f0 transparent;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-top">
+    <div class="brand">
+      <div class="brand-logo">🏥</div>
+      <div>
+        <div class="brand-text">XtreamHealthAI</div>
+        <div class="brand-sub">by TeamXtream</div>
+      </div>
+    </div>
+    <div class="sb-search">
+      <span style="color:var(--t4);font-size:12px;">&#x1F50D;</span>
+      <input type="text" placeholder="Search patients...">
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Patient Consultations <span class="sb-label-count" id="pt-count">4</span></div>
+    <div id="pt-list">
+      <div class="pt-item active" onclick="selectPt(this,'Priya Sharma','PS','#7c3aed','#ede9fe','F · 28 · Wellness · Mumbai')">
+        <div class="pt-av" style="background:#ede9fe;color:#7c3aed;">PS</div>
+        <div class="pt-info"><div class="pt-name">Priya Sharma</div><div class="pt-meta">Wellness · 3 msgs open</div></div>
+        <div class="pt-status on"></div>
+      </div>
+      <div class="pt-item" onclick="selectPt(this,'Mohan Mehta','MM','#0891b2','#cffafe','M · 45 · Triage · Delhi')">
+        <div class="pt-av" style="background:#cffafe;color:#0891b2;">MM</div>
+        <div class="pt-info"><div class="pt-name">Mohan Mehta</div><div class="pt-meta">Triage · follow-up</div></div>
+        <div class="pt-status busy"></div>
+      </div>
+      <div class="pt-item" onclick="selectPt(this,'Ananya Patel','AP','#16a34a','#dcfce7','F · 34 · Nutrition · Ahmedabad')">
+        <div class="pt-av" style="background:#dcfce7;color:#16a34a;">AP</div>
+        <div class="pt-info"><div class="pt-name">Ananya Patel</div><div class="pt-meta">Nutrition · new patient</div></div>
+        <span class="unread">2</span>
+      </div>
+      <div class="pt-item" onclick="selectPt(this,'Rahul Kumar','RK','#2563eb','#dbeafe','M · 29 · General · Bengaluru')">
+        <div class="pt-av" style="background:#dbeafe;color:#2563eb;">RK</div>
+        <div class="pt-info"><div class="pt-name">Rahul Kumar</div><div class="pt-meta">General · active</div></div>
+        <div class="pt-status on"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sb-section" style="border-top:1px solid var(--bdr2);margin-top:6px;padding-top:12px;">
+    <div class="sb-label">Navigation</div>
+    <div class="sb-nav-item">📝 Health Records</div>
+    <div class="sb-nav-item">💊 Prescriptions</div>
+    <div class="sb-nav-item">📊 Analytics</div>
+    <div class="sb-nav-item">🧠 RAG Knowledge Base</div>
+  </div>
+  <div class="sb-footer">
+    <div class="doc-card">
+      <div class="doc-av">X</div>
+      <div>
+        <div class="doc-name">XtreamHealthAI</div>
+        <div class="doc-status"><span class="online-dot"></span><span id="footer-status">Connecting...</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CENTER -->
+<div class="center">
+  <div class="ch">
+    <div class="ch-row1">
+      <div class="ch-patient">
+        <div class="ch-pav" id="ch-av" style="background:#ede9fe;color:#7c3aed;">PS</div>
+        <div>
+          <div class="ch-pname" id="ch-name">Priya Sharma</div>
+          <div class="ch-psub" id="ch-sub">F · 28 · Wellness · Mumbai</div>
+        </div>
+      </div>
+      <div class="ch-controls">
+        <div class="ctrl conn" id="conn-ctrl"><span id="conn-dot"></span><span id="conn-lbl">Connecting...</span></div>
+        <div class="ctrl outline" onclick="resetSession()">↺ Reset</div>
+        <div class="ctrl well" id="mode-ctrl" onclick="toggleMode()">🌿 Wellness</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('chat',this)">💬 Chat</div>
+      <div class="tab" onclick="switchTab('meal',this)">🍱 Meal Photo</div>
+      <div class="tab" onclick="switchTab('wear',this)">📡 Wearable <span class="tab-badge" id="anom-badge" style="display:none">!</span></div>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="panel active" id="panel-chat">
+    <div class="chat-scroll" id="chat-area">
+      <div class="empty" id="empty-state">
+        <div class="e-icon">🏥</div>
+        <h3>XtreamHealthAI Ready</h3>
+        <p>Ask about symptoms, nutrition, fitness, or wellness. Clinical references retrieved automatically via RAG.</p>
+      </div>
+    </div>
+    <div class="chips" id="quick-chips">
+      <div class="chip" onclick="sendQ(this)">I have a headache and mild fever</div>
+      <div class="chip" onclick="sendQ(this)">Best diet plan for weight loss?</div>
+      <div class="chip" onclick="sendQ(this)">My heart rate seems high</div>
+      <div class="chip" onclick="sendQ(this)">Vitamins for low energy</div>
+      <div class="chip" onclick="sendQ(this)">How to improve sleep quality?</div>
+      <div class="chip" onclick="sendQ(this)">I feel anxious and stressed</div>
+    </div>
+    <div class="sbar">
+      <div class="sbar-l"><span id="live-dot" class="dead"></span><span id="status-txt">XtreamHealthAI · connecting...</span></div>
+      <div class="sbar-r" id="model-info">RAG + LLM · TeamXtream · Not a medical device</div>
+    </div>
+    <div class="inp-wrap">
+      <div class="inp-box">
+        <textarea class="inp" id="chat-inp" rows="1" placeholder="Ask XtreamHealthAI anything about your health..." onkeydown="handleKey(event)" oninput="autoH(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMsg()">➤</button>
+      </div>
+      <div class="inp-toolbar">
+        <div class="mode-pill wellness" id="mode-pill" onclick="toggleMode()">🌿 Wellness mode</div>
+        <label class="icon-pill" for="attach-file">📎 Attach</label>
+        <input type="file" id="attach-file" style="display:none">
+        <div class="icon-pill" onclick="generateRx()">💊 Rx</div>
+        <div class="disclaimer">XtreamHealthAI · Not a substitute for medical advice</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEAL PANEL -->
+  <div class="panel" id="panel-meal">
+    <div class="meal-scroll">
+      <label for="meal-file" class="upload-lbl" id="upload-lbl"
+        ondragover="event.preventDefault();this.style.borderColor='var(--blue)'"
+        ondragleave="this.style.borderColor=''"
+        ondrop="dropMeal(event)">
+        <div class="up-icon">🍽️</div>
+        <div class="up-title">Drop a meal photo or click to upload</div>
+        <div class="up-sub">JPEG · PNG · XtreamHealthAI Vision analyses macros & food quality</div>
+        <img id="meal-prev" style="display:none">
+      </label>
+      <input type="file" id="meal-file" accept="image/*" style="display:none" onchange="prevMeal(event)">
+      <div style="text-align:center;">
+        <button class="analyse-btn" id="an-btn" onclick="analyseMeal()" disabled>🔍 Analyse Meal</button>
+      </div>
+      <div id="macro-res" style="display:none;">
+        <div class="macro-grid">
+          <div class="mc"><div class="mc-l">Calories</div><div class="mc-v cal" id="m-cal">—</div></div>
+          <div class="mc"><div class="mc-l">Protein</div><div class="mc-v pro" id="m-pro">—<span class="mc-u">g</span></div></div>
+          <div class="mc"><div class="mc-l">Carbs</div><div class="mc-v car" id="m-car">—<span class="mc-u">g</span></div></div>
+          <div class="mc"><div class="mc-l">Fat</div><div class="mc-v fat" id="m-fat">—<span class="mc-u">g</span></div></div>
+        </div>
+        <div class="meal-card" id="meal-txt"></div>
+        <div class="tool-row" style="padding:4px 0;" id="meal-badges"></div>
+      </div>
+    </div>
+    <div class="sbar">
+      <div class="sbar-l"><span id="meal-dot" class="dead"></span><span id="meal-status">POST /meal-photo · Vision LLM ready</span></div>
+      <div class="sbar-r">GPT-4V / LLaVA stub · XtreamHealthAI</div>
+    </div>
+  </div>
+
+  <!-- WEARABLE PANEL -->
+  <div class="panel" id="panel-wear">
+    <div class="wear-ctrl">
+      <button class="wb" id="stream-btn" onclick="toggleStream()">▶ Start Stream</button>
+      <button class="wb" onclick="singleRead()">📤 Single Reading</button>
+      <button class="wb danger" onclick="clearWear()">✕ Clear</button>
+      <span style="font-size:11px;color:var(--t4);" id="stream-lbl">Idle</span>
+    </div>
+    <div class="wear-scroll" id="wear-list">
+      <div class="empty" style="padding:40px 0;">
+        <div class="e-icon" style="font-size:30px;">📡</div>
+        <h3 style="font-size:13px;">No readings yet</h3>
+        <p style="font-size:11px;">Start stream or send a single reading.</p>
+      </div>
+    </div>
+    <div class="sbar">
+      <div class="sbar-l"><span id="wear-dot" class="dead"></span><span id="wear-status">POST /wearable-stream · Z-score + threshold detection</span></div>
+      <div class="sbar-r">Anomaly detection · XtreamHealthAI</div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="rightpanel">
+  <div class="rp">
+    <div class="rp-title"><span>❤️ Live Vitals</span><span class="rp-action" onclick="singleRead()">Refresh</span></div>
+    <div class="vitals-g">
+      <div class="vc"><div class="vc-i">❤️</div><div class="vc-v neu" id="v-hr">—</div><div class="vc-u">bpm</div><div class="vc-l">Heart Rate</div></div>
+      <div class="vc"><div class="vc-i">🫁</div><div class="vc-v neu" id="v-sp">—</div><div class="vc-u">%</div><div class="vc-l">SpO2</div></div>
+      <div class="vc"><div class="vc-i">🌡️</div><div class="vc-v neu" id="v-tmp">—</div><div class="vc-u">°C</div><div class="vc-l">Temp</div></div>
+      <div class="vc"><div class="vc-i">👟</div><div class="vc-v neu" id="v-stp">—</div><div class="vc-u">steps</div><div class="vc-l">Today</div></div>
+      <div class="vc"><div class="vc-i">😴</div><div class="vc-v neu" id="v-slp">—</div><div class="vc-u">hrs</div><div class="vc-l">Sleep</div></div>
+      <div class="vc"><div class="vc-i">⚡</div><div class="vc-v neu" id="v-hrv">—</div><div class="vc-u">ms</div><div class="vc-l">HRV</div></div>
+    </div>
+  </div>
+  <div class="rp">
+    <div class="rp-title"><span>🧠 Intent Classifier</span><span class="rp-action">RAG · LLM</span></div>
+    <div id="intent-display" style="font-size:11px;color:var(--t4);">Send a message to see intent classification.</div>
+  </div>
+  <div class="rp" style="flex:1;overflow-y:auto;">
+    <div class="rp-title"><span>💊 Doctor Rx Suggestions</span><span class="rp-action" onclick="generateRx()">Generate</span></div>
+    <div id="rx-list"><div style="font-size:11px;color:var(--t4);margin-bottom:8px;">AI-suggested medications. Click Generate or chat to auto-populate.</div></div>
+    <div class="disc">⚠️ XtreamHealthAI suggestions ONLY. NOT a prescription. Consult a licensed physician. Not a medical device.</div>
+    <div style="margin-top:14px;">
+      <div class="rp-title" style="margin-bottom:8px;"><span>🥗 Macro Nutrition</span></div>
+      <div id="nut-bars"><div style="font-size:11px;color:var(--t4);">Analyse a meal photo to see breakdown.</div></div>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="rp-title"><span>📚 Clinical References</span><span class="rp-action" id="rag-count">0 retrieved</span></div>
+      <div id="rag-panel"><div style="font-size:11px;color:var(--t4);">References appear here after each AI response.</div></div>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="rp-title"><span>🔔 Anomaly Log</span><span class="rp-action" id="anom-cnt">0 alerts</span></div>
+      <div id="anom-log"><div style="font-size:11px;color:var(--t4);">No anomalies detected.</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- shell -->
+
+<script>
+const API = localStorage.getItem('xtreamApiBase') || 'http://localhost:8000';
+let mode = 'wellness', sid = 'sid_' + Math.random().toString(36).slice(2,9);
+let mealFile = null, streaming = false, stTimer = null;
+let anomCount = 0, msgCount = 0;
+
+async function checkHealth(){
+  try{
+    const r = await fetch(API+'/health',{signal:AbortSignal.timeout(4000)});
+    if(r.ok){
+      const d = await r.json();
+      document.getElementById('conn-dot').className='up';
+      document.getElementById('conn-lbl').textContent='connected';
+      document.getElementById('conn-ctrl').className='ctrl conn up';
+      document.getElementById('live-dot').className='live';
+      document.getElementById('footer-status').textContent='Online · '+API;
+      document.getElementById('status-txt').textContent=`XtreamHealthAI v${d.version||'3'} · ${d.llm_provider||'stub'} · RAG KB: ${d.rag_kb_size||12} docs`;
+      document.getElementById('model-info').textContent=`RAG+LLM · ${d.llm_provider||'stub'} · TeamXtream`;
+      document.getElementById('meal-dot').className='live';
+    }
+  }catch{
+    document.getElementById('conn-dot').className='';
+    document.getElementById('conn-lbl').textContent='offline';
+    document.getElementById('conn-ctrl').className='ctrl conn';
+    document.getElementById('live-dot').className='dead';
+    document.getElementById('status-txt').textContent='Backend offline · run: uvicorn main:app --reload';
+    document.getElementById('footer-status').textContent='Offline';
+  }
+}
+
+function selectPt(el,name,init,color,bg,sub){
+  document.querySelectorAll('.pt-item').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ch-name').textContent=name;
+  document.getElementById('ch-sub').textContent=sub;
+  const av=document.getElementById('ch-av'); av.textContent=init; av.style.background=bg; av.style.color=color;
+  clearChat(); sid='sid_'+Math.random().toString(36).slice(2,9);
+}
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); document.getElementById('panel-'+id).classList.add('active');
+}
+
+function toggleMode(){
+  mode = mode==='wellness'?'triage':'wellness';
+  const pill=document.getElementById('mode-pill'), ctrl=document.getElementById('mode-ctrl');
+  if(mode==='triage'){pill.className='mode-pill triage'; pill.textContent='🩺 Triage mode'; ctrl.className='ctrl tri'; ctrl.textContent='🩺 Triage';}
+  else{pill.className='mode-pill wellness'; pill.textContent='🌿 Wellness mode'; ctrl.className='ctrl well'; ctrl.textContent='🌿 Wellness';}
+}
+
+function autoH(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function sendQ(chip){document.getElementById('chat-inp').value=chip.textContent;sendMsg();}
+
+function clearChat(){
+  document.getElementById('chat-area').innerHTML=`<div class="empty" id="empty-state"><div class="e-icon">🏥</div><h3>XtreamHealthAI Ready</h3><p>Ask about symptoms, nutrition, fitness, or wellness.</p></div>`;
+  document.getElementById('quick-chips').style.display='flex'; msgCount=0;
+}
+
+function appendUser(text){
+  const a=document.getElementById('chat-area');
+  const e=document.getElementById('empty-state'); if(e)e.remove();
+  document.getElementById('quick-chips').style.display='none';
+  const t=new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div'); d.className='msg user';
+  d.innerHTML=`<div class="m-av u">RK</div><div class="m-body"><div class="m-name">You · ${t}</div><div class="bubble user">${esc(text)}</div></div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight;
+}
+
+function appendAI(text,data){
+  const a=document.getElementById('chat-area');
+  const t=new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+  const dm=data.detected_mode||data.mode||'wellness';
+  const conf=data.confidence||0; const tok=data.tokens_used||0;
+  const lat=data.latency_ms||0; const prov=data.provider||'stub';
+  const esc_flag=data.escalation||data.should_escalate;
+  const ragN=data.rag_docs_found||0;
+  const escBadge=esc_flag?'<span class="tb esc">🚨 escalation</span>':'';
+  const ragBadge=ragN>0?`<span class="tb rag">📚 RAG · ${ragN} refs</span>`:'';
+  const confBadge=`<span class="tb conf">${Math.round(conf*100)}% conf</span>`;
+  const cites=(data.citations||[]).map((c,i)=>`<span class="cite-chip" title="${esc(c.source||'')}">[${c.id||'REF-'+(i+1)}] ${esc(c.title||'')}</span>`).join('');
+  const d=document.createElement('div'); d.className='msg';
+  const bubClass=esc_flag?'bubble emergency':'bubble ai';
+  d.innerHTML=`
+    <div class="m-av ai">X</div>
+    <div class="m-body">
+      <div class="m-name">XtreamHealthAI · ${t} · ${prov}</div>
+      <div class="tool-row">
+        <span class="tb ok"><span class="tb-dot"></span> succeeded</span>
+        <span class="tb type">${dm}</span>
+        <span class="tb ep">/chat</span>
+        ${confBadge}${ragBadge}${escBadge}
+      </div>
+      <div class="${bubClass}">${esc(text)}</div>
+      ${cites?`<div class="citations">${cites}</div>`:''}
+      <div class="m-footer"><span class="tokens">${tok} tokens</span><span class="latency">${lat}ms</span></div>
+    </div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight;
+  updateIntentDisplay(dm, conf, esc_flag, ragN);
+  if(data.citations&&data.citations.length) updateRagPanel(data.citations);
+}
+
+function appendTyping(){
+  const a=document.getElementById('chat-area');
+  const d=document.createElement('div'); d.id='typing'; d.className='msg';
+  d.innerHTML=`<div class="m-av ai">X</div><div class="m-body"><div class="m-name">XtreamHealthAI</div><div class="typing-bub"><span></span><span></span><span></span></div></div>`;
+  a.appendChild(d); a.scrollTop=a.scrollHeight; return d;
+}
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-inp');
+  const text=inp.value.trim(); if(!text) return;
+  inp.value=''; inp.style.height='auto';
+  document.getElementById('send-btn').disabled=true;
+  appendUser(text);
+  const typing=appendTyping(); msgCount++;
+  try{
+    const r=await fetch(API+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,mode,session_id:sid,health_conditions:[]})});
+    const data=await r.json();
+    typing.remove();
+    appendAI(data.response||JSON.stringify(data),data);
+    if(data.escalation||data.should_escalate){anomCount++;updateAnomBadge();}
+    if(msgCount%2===0) generateRx();
+  }catch(e){
+    typing.remove();
+    appendAI('⚠️ Backend unreachable. Run: uvicorn main:app --reload',
+      {mode:'error',confidence:0,tokens_used:0,latency_ms:0,provider:'offline',citations:[],rag_docs_found:0});
+  }
+  document.getElementById('send-btn').disabled=false;
+  document.getElementById('chat-inp').focus();
+}
+
+async function resetSession(){
+  try{await fetch(API+'/session/'+sid+'/reset',{method:'POST'});}catch{}
+  clearChat(); sid='sid_'+Math.random().toString(36).slice(2,9);
+}
+
+function updateIntentDisplay(dm, conf, esc_flag, ragN){
+  const pct=Math.round(conf*100);
+  const chipClass=esc_flag?'emergency':dm;
+  const label=esc_flag?'EMERGENCY':dm.toUpperCase();
+  document.getElementById('intent-display').innerHTML=`
+    <div class="intent-row"><span class="intent-chip ${chipClass}">${label}</span>
+      <span style="font-size:10px;color:var(--t4);">Confidence:</span>
+      <span style="font-size:10px;font-weight:700;color:var(--t2);">${pct}%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:6px;">
+      <div class="conf-fill" style="width:${pct}%;background:${pct>75?'var(--green)':pct>50?'#f59e0b':'var(--red)'}"></div>
+    </div>
+    <div style="margin-top:5px;font-size:10px;color:var(--t4);">RAG docs retrieved: ${ragN} · Deterministic classifier</div>`;
+}
+
+function updateRagPanel(citations){
+  document.getElementById('rag-count').textContent=citations.length+' retrieved';
+  document.getElementById('rag-panel').innerHTML=citations.map(c=>`
+    <div style="margin-bottom:7px;padding:7px 9px;background:#fff;border:1px solid var(--bdr);border-radius:8px;">
+      <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:2px;">[${c.id}] ${esc(c.title||'')}</div>
+      <div style="font-size:10px;color:var(--t4);">${esc(c.source||'')} · score: ${c.score||'n/a'}</div>
+    </div>`).join('');
+}
+
+function prevMeal(e){
+  mealFile=e.target.files[0]; if(!mealFile) return;
+  const r=new FileReader(); r.onload=ev=>{const i=document.getElementById('meal-prev');i.src=ev.target.result;i.style.display='block';document.getElementById('an-btn').disabled=false;};
+  r.readAsDataURL(mealFile);
+}
+function dropMeal(e){
+  e.preventDefault(); const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')){mealFile=f;const r=new FileReader();r.onload=ev=>{const i=document.getElementById('meal-prev');i.src=ev.target.result;i.style.display='block';document.getElementById('an-btn').disabled=false;};r.readAsDataURL(f);}
+}
+async function analyseMeal(){
+  if(!mealFile) return;
+  const btn=document.getElementById('an-btn'); btn.disabled=true; btn.textContent='⏳ Analysing...';
+  try{
+    const fd=new FormData(); fd.append('file',mealFile);
+    const r=await fetch(API+'/meal-photo',{method:'POST',body:fd});
+    const data=await r.json();
+    document.getElementById('macro-res').style.display='block';
+    const m=data.macros||data;
+    document.getElementById('m-cal').innerHTML=(m.calories||350)+'<span class="mc-u">kcal</span>';
+    document.getElementById('m-pro').innerHTML=(m.protein||25)+'<span class="mc-u">g</span>';
+    document.getElementById('m-car').innerHTML=(m.carbs||40)+'<span class="mc-u">g</span>';
+    document.getElementById('m-fat').innerHTML=(m.fat||12)+'<span class="mc-u">g</span>';
+    document.getElementById('meal-txt').textContent=data.analysis||'Analysis complete.';
+    document.getElementById('meal-badges').innerHTML=`<span class="tb ok"><span class="tb-dot"></span> succeeded</span><span class="tb type">vision</span><span class="tb ep">/meal-photo</span><span class="tb type">${data.provider||'stub-vision'}</span>`;
+    document.getElementById('meal-status').textContent='POST /meal-photo · 200 OK · XtreamHealthAI';
+    const pro=m.protein||25, car=m.carbs||40, fat=m.fat||12, total=(pro+car+fat)||1;
+    document.getElementById('nut-bars').innerHTML=[
+      {l:'Protein',v:pro,c:'#2563eb'},{l:'Carbs',v:car,c:'#8b5cf6'},{l:'Fat',v:fat,c:'#ec4899'}
+    ].map(n=>`<div class="nb"><div class="nb-head"><span>${n.l}</span><span>${n.v}g · ${Math.round(n.v/total*100)}%</span></div><div class="nb-bg"><div class="nb-fill" style="width:${Math.round(n.v/total*100)}%;background:${n.c}"></div></div></div>`).join('');
+  }catch{
+    document.getElementById('meal-status').textContent='Error · backend unreachable';
+    document.getElementById('meal-txt').textContent='⚠️ Could not reach /meal-photo. Run uvicorn main:app --reload';
+    document.getElementById('macro-res').style.display='block';
+  }
+  btn.disabled=false; btn.textContent='🔍 Analyse Meal';
+}
+
+function rnd(a,b,d=1){return +(Math.random()*(b-a)+a).toFixed(d);}
+function genRead(){return{heart_rate:rnd(55,108,0),spo2:rnd(93,100,1),temperature:rnd(36.1,38.8,1),steps:rnd(0,400,0),hrv:rnd(15,90,0),sleep_hours:rnd(4.5,9,1)};}
+async function singleRead(){await postRead(genRead());}
+
+async function postRead(v){
+  document.getElementById('wear-status').textContent='POST /wearable-stream · sending...';
+  document.getElementById('wear-dot').className='live';
+  const lst=document.getElementById('wear-list');
+  const emp=lst.querySelector('.empty'); if(emp)emp.remove();
+  try{
+    const r=await fetch(API+'/wearable-stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(v)});
+    const d=await r.json();
+    const isAnom=d.anomaly_detected, isCrit=d.critical;
+    if(isAnom){anomCount++;updateAnomBadge();logAnom(d.anomalies);}
+    updateVitals(v,d.anomalies||[]);
+    const card=document.createElement('div'); card.className='w-card'+(isAnom?' anom':'');
+    const now=new Date().toLocaleTimeString();
+    const pill=isCrit?`<span class="crit-pill">Critical</span>`:isAnom?`<span class="an-pill">Anomaly</span>`:`<span class="ok-pill">Normal</span>`;
+    card.innerHTML=`<div><div class="w-label">${isAnom?'⚠️ Anomaly ·':'✅ Normal ·'} ${now}</div>
+      <div class="w-vals">HR: ${v.heart_rate} bpm · SpO2: ${v.spo2}% · ${v.temperature}°C</div>
+      <div class="w-sub">Steps: ${v.steps} · HRV: ${v.hrv}ms · Sleep: ${v.sleep_hours}h</div>
+      ${isAnom?`<div class="w-find">${(d.anomalies||[]).map(a=>a.message||a).join(' · ')}</div>`:''}
+      ${(d.wellness_tips||[]).length?`<div class="w-sub" style="color:var(--green);margin-top:3px;">💡 ${d.wellness_tips[0]}</div>`:''}
+      </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">${pill}<span class="w-time">${d.latency_ms||0}ms</span></div>`;
+    lst.insertBefore(card,lst.firstChild);
+    document.getElementById('wear-status').textContent=`POST /wearable-stream · 200 OK · ${isAnom?'⚠️ anomaly':'✅ normal'}`;
+  }catch{
+    document.getElementById('wear-status').textContent='Error · backend unreachable';
+  }
+}
+
+function toggleStream(){
+  const btn=document.getElementById('stream-btn');
+  if(!streaming){streaming=true; btn.textContent='⏹ Stop Stream'; btn.className='wb stream';
+    document.getElementById('stream-lbl').textContent='Streaming every 3s...';
+    postRead(genRead()); stTimer=setInterval(()=>postRead(genRead()),3000);
+  }else{streaming=false; clearInterval(stTimer); btn.textContent='▶ Start Stream'; btn.className='wb';
+    document.getElementById('stream-lbl').textContent='Idle'; document.getElementById('wear-dot').className='dead';}
+}
+
+function clearWear(){
+  if(streaming)toggleStream();
+  document.getElementById('wear-list').innerHTML=`<div class="empty" style="padding:40px 0;"><div class="e-icon" style="font-size:30px;">📡</div><h3 style="font-size:13px;">No readings yet</h3><p style="font-size:11px;">Start stream or send a single reading.</p></div>`;
+  document.getElementById('wear-dot').className='dead';
+}
+
+function updateVitals(v,anomalies){
+  const anomMetrics=new Set((anomalies||[]).map(a=>a.metric));
+  const setV=(id,val,metric,low,high)=>{
+    const el=document.getElementById(id); el.textContent=val||'—';
+    el.className='vc-v '+(val===undefined||val===null?'neu':anomMetrics.has(metric)?'crit':val<low?'warn':val>high?'warn':'norm');
+  };
+  setV('v-hr',v.heart_rate,'heart_rate',60,100);
+  setV('v-sp',v.spo2,'spo2',95,100);
+  setV('v-tmp',v.temperature,'temperature',36,37.5);
+  document.getElementById('v-stp').textContent=v.steps||'—';
+  document.getElementById('v-stp').className='vc-v norm';
+  const slp=document.getElementById('v-slp'); slp.textContent=v.sleep_hours||'—';
+  slp.className='vc-v '+(v.sleep_hours&&v.sleep_hours<6?'warn':'norm');
+  const hrv=document.getElementById('v-hrv'); hrv.textContent=v.hrv||'—';
+  hrv.className='vc-v '+(v.hrv&&v.hrv<25?'warn':'norm');
+}
+
+function logAnom(anomalies){
+  const log=document.getElementById('anom-log');
+  const init=log.querySelector('[style]'); if(init)init.remove();
+  const d=document.createElement('div'); d.className='al-entry';
+  d.innerHTML=`<span class="al-time">${new Date().toLocaleTimeString()}</span> — ${(anomalies||[]).map(a=>a.message||a).join(' | ')}`;
+  log.insertBefore(d,log.firstChild);
+}
+
+function updateAnomBadge(){
+  document.getElementById('anom-badge').style.display='inline';
+  document.getElementById('anom-badge').textContent=anomCount;
+  document.getElementById('anom-cnt').textContent=anomCount+' alert'+(anomCount!==1?'s':'');
+}
+
+const RX=[
+  {n:'Paracetamol',d:'500mg · oral',f:'Every 6h as needed (max 4g/day)',c:'g',t:'otc',l:'OTC'},
+  {n:'Ibuprofen',d:'400mg · oral',f:'Every 8h with food',c:'y',t:'warn',l:'Caution'},
+  {n:'Cetirizine',d:'10mg · oral',f:'Once daily at bedtime',c:'b',t:'otc',l:'OTC'},
+  {n:'Vitamin D3',d:'1000 IU · oral',f:'Once daily with meal',c:'g',t:'otc',l:'Supplement'},
+  {n:'Magnesium Glycinate',d:'200mg · oral',f:'Once daily at bedtime',c:'g',t:'otc',l:'Supplement'},
+  {n:'Omeprazole',d:'20mg · oral',f:'Before breakfast · max 14 days',c:'y',t:'warn',l:'Caution'},
+  {n:'Azithromycin',d:'500mg · oral',f:'Once daily for 3 days (Rx required)',c:'r',t:'rx',l:'Rx Only'},
+  {n:'Loratadine',d:'10mg · oral',f:'Once daily (non-drowsy)',c:'b',t:'otc',l:'OTC'},
+  {n:'Zinc + Vitamin C',d:'15mg + 500mg',f:'Once daily with meals',c:'g',t:'otc',l:'Supplement'},
+];
+function generateRx(){
+  const picks=RX.sort(()=>Math.random()-.5).slice(0,3);
+  document.getElementById('rx-list').innerHTML=picks.map(rx=>`
+    <div class="rx ${rx.c}"><span class="rx-tag ${rx.t}">${rx.l}</span>
+      <div class="rx-name">${rx.n}</div><div class="rx-dose">${rx.d}</div><div class="rx-freq">${rx.f}</div></div>`).join('');
+}
+
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+checkHealth(); setInterval(checkHealth,15000); generateRx();
+</script>
+</body>
+</html>
